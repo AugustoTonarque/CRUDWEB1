@@ -13,12 +13,10 @@ export const getUsers = (_, res) => {
 export const addUser = (req, res) => {
     const { nome, nota, presença } = req.body;
 
-    // Validação do nome (não pode conter números)
     if (/\d/.test(nome)) {
         return res.status(400).json("O nome não pode conter números!");
     }
 
-    // Validação da nota e presença (devem estar entre 0 e 100)
     if (nota < 0 || nota > 100 || presença < 0 || presença > 100) {
         return res.status(400).json("Nota e presença devem estar entre 0 e 100!");
     }

@@ -61,29 +61,24 @@ const Form = ({ getUsers, onEdit, setOnEdit, }) => {
     
         const user = ref.current;
     
-        // Validação de campos vazios
         if (!user.nome.value || !user.nota.value || !user.presença.value) {
             return toast.warn("Preencha todos os campos!");
         }
     
-        // Validação do nome (não permite números)
         if (/\d/.test(user.nome.value)) {
             return toast.warn("O nome não pode conter números!");
         }
     
-        // Validação da nota (entre 0 e 100)
         const nota = parseFloat(user.nota.value);
         if (isNaN(nota) || nota < 0 || nota > 100) {
             return toast.warn("A nota deve ser um número entre 0 e 100!");
         }
     
-        // Validação da presença (entre 0 e 100)
         const presenca = parseFloat(user.presença.value);
         if (isNaN(presenca) || presenca < 0 || presenca > 100) {
             return toast.warn("A presença deve ser um número entre 0 e 100!");
         }
     
-        // Faz a requisição ao backend
         try {
             if (onEdit) {
                 await axios
