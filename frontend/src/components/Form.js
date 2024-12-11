@@ -58,50 +58,60 @@ const Form = ({ getUsers, onEdit, setOnEdit, }) => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
+    
         const user = ref.current;
-
-        if (
-            !user.nome.value||
-            !user.nota.value||
-            !user.presença.value
-          
-        ) {
+    
+        // Validação de campos vazios
+        if (!user.nome.value || !user.nota.value || !user.presença.value) {
             return toast.warn("Preencha todos os campos!");
         }
-
-    if (onEdit){
-        await axios
-        .put("http://localhost:8800/" + onEdit.id, {
-            nome: user.nome.value,
-            nota: user.nota.value,
-            presença: user.presença.value,
-            
-        })
-
-        .then (({ data }) => toast.success(data))
-        .catch (({ data }) => toast.error(data));
-    }
-
-    else {
-        await axios
-        .post("http://localhost:8800", {
-            nome: user.nome.value,
-            nota: user.nota.value,
-            presença: user.presença.value,
-            
-        })
-        .then (({ data }) => toast.success(data))
-        .catch (({ data }) => toast.error(data));
-    }
-
-    user.nome.value = "";
-    user.nota.value = "";
-    user.presença.value = "";
-    setOnEdit(null);
-    getUsers();
-};
-
+    
+        // Validação do nome (não permite números)
+        if (/\d/.test(user.nome.value)) {
+            return toast.warn("O nome não pode conter números!");
+        }
+    
+        // Validação da nota (entre 0 e 100)
+        const nota = parseFloat(user.nota.value);
+        if (isNaN(nota) || nota < 0 || nota > 100) {
+            return toast.warn("A nota deve ser um número entre 0 e 100!");
+        }
+    
+        // Validação da presença (entre 0 e 100)
+        const presenca = parseFloat(user.presença.value);
+        if (isNaN(presenca) || presenca < 0 || presenca > 100) {
+            return toast.warn("A presença deve ser um número entre 0 e 100!");
+        }
+    
+        // Faz a requisição ao backend
+        try {
+            if (onEdit) {
+                await axios
+                    .put("http://localhost:8800/" + onEdit.id, {
+                        nome: user.nome.value,
+                        nota: nota,
+                        presença: presenca,
+                    })
+                    .then(({ data }) => toast.success(data));
+            } else {
+                await axios
+                    .post("http://localhost:8800", {
+                        nome: user.nome.value,
+                        nota: nota,
+                        presença: presenca,
+                    })
+                    .then(({ data }) => toast.success(data));
+            }
+        } catch ({ response }) {
+            toast.error(response.data);
+        }
+    
+        user.nome.value = "";
+        user.nota.value = "";
+        user.presença.value = "";
+        setOnEdit(null);
+        getUsers();
+    };
 
 
     return (
